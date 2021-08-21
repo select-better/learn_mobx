@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react';
-import { useCounter, useUpdate, observer , autoObserve } from './utils'
+import { useCounter, useUpdate, observer , autoObserve, runInAction } from './utils'
 
 import './index.css'
 
@@ -45,8 +45,10 @@ const Sum = () => {
         <button onClick={()=>{
             // 这里的异步的setState会失效 和setTimeout一样，所以更新会多次
             Promise.resolve().then(()=>{
-                model.a += 10;
-                model.b += 10;
+                runInAction(()=>{
+                    model.a += 10;
+                    model.b += 10;
+                })
             })
         }}> 按钮 </button>
         {/* 更新次数会两次两次的增加 */}

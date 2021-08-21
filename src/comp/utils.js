@@ -16,7 +16,9 @@ export const useCounter = () => {
 
 // 增加一个全局变量，记录需要加入的更新方式
 export const globalState = {
-    currentReaction: null
+    currentReaction: null,
+    isBatch: 0,
+    pendingReactions : []
 }
 
 // 原子，用于区分定义
@@ -38,7 +40,12 @@ class Atom{
    }
    // 触发我们的更新
    actionReaction(){
-       this.reactions.forEach(item=>item.innerEffect && item.innerEffect())
+       for(const reaction of this.reactions){
+           if(!globalState.pendingReactions.includes(reaction)){
+             globalState.pendingReactions.push(reaction)
+           }
+       }
+       beginReactions()
    }
 }
 
@@ -79,4 +86,28 @@ export const observer = ( fn ) => {
             globalState.currentReaction = null
         }
     })
+}
+
+const beginReactions = () => {
+    if(globalState.isBatch > 0){
+        return 
+    }
+    const copy = globalState.pendingReactions;
+    globalState.pendingReactions = [];
+    copy.forEach(item=>{
+        item.innerEffect()
+    })
+}
+
+export const runInAction = ( fn ) => {
+    globalState.isBatch +=1
+    try{
+      return fn()
+    }finally{
+       globalState.isBatch-=1;
+       // 下面可写可不写
+       if(globalState.isBatch === 0){
+           beginReactions()
+       }
+    }
 }
