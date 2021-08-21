@@ -1,61 +1,14 @@
 import React, { memo, useState } from 'react';
-import { useCounter, useUpdate } from './utils'
+import { useCounter, useUpdate, Reaction, autoObserve, globalState } from './utils'
 
 import './index.css'
 
-// 增加一个全局变量，记录需要加入的更新方式
-const globalState = {
-    currentReaction: null
-}
-
-// 原子，用于区分定义
-class Reaction{
-    constructor(name, innerEffect){
-       this.name = name;
-       this.innerEffect = innerEffect;
-    }
-}
-
-// 原子上的电子，用来触发事件
-class Atom{
-   reactions = new Set()
-   // 增加我们的原子
-   addReaction(){
-       if(globalState.currentReaction){
-           this.reactions.add(globalState.currentReaction)
-       }
-   }
-   // 触发我们的更新
-   actionReaction(){
-       this.reactions.forEach(item=>item.innerEffect && item.innerEffect())
-   }
-}
-
 class Model{
-    state_a = 222;
-    atom_a = new Atom();
-    // 当作数据来执行 比如get 和 set
-    get a(){
-        this.atom_a.addReaction();
-        return this.state_a
-    }
-
-    set a(val){
-        this.state_a = val;
-        this.atom_a.actionReaction();
-    }
-
-    state_b = 'bbb';
-    atom_b = new Atom();
- 
-    get b(){
-        this.atom_b.addReaction()
-        return this.state_b
-    }
-    set b(val){
-        this.state_b = val
-        this.atom_b.actionReaction()
-    }
+   a = 'a';
+   b =  'bb';
+   constructor(){
+     autoObserve(this)
+   }   
 }
 
 // 点击后model的key——value发生变化后触发更新
