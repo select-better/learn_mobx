@@ -4,8 +4,8 @@ import { useCounter, useUpdate, observer , autoObserve } from './utils'
 import './index.css'
 
 class Model{
-   a = 'a';
-   b =  'bb';
+   a = 1;
+   b =  2;
    constructor(){
      autoObserve(this)
    }   
@@ -39,14 +39,22 @@ const B = observer(() => {
 
 const Sum = () => {
     const count = useCounter();
-    const updateFun = useUpdate();
+
     return <div className='container'>
         <div>title:Sum</div>
-        <button onClick={updateFun}> 按钮 </button>
+        <button onClick={()=>{
+            // 这里的异步的setState会失效 和setTimeout一样，所以更新会多次
+            Promise.resolve().then(()=>{
+                model.a += 10;
+                model.b += 10;
+            })
+        }}> 按钮 </button>
+        {/* 更新次数会两次两次的增加 */}
         <div> 更新的次数：{count} </div>
+        <div>  a*b：{ model.a * model.b } </div>
         <A />
         <B />
     </div>
 }
 
-export default memo(Sum)
+export default observer(Sum)
