@@ -1,3 +1,4 @@
 ## 简单的学习mobx的原理
 对于mobx的底层进行一部分学习 是学习的记录
 版本一将简单的设置和取值都用方法来代替, 将model绑定在window上就可以在console操作台控制更新，用model.set_a或model.set_b进行更新
+会一步一步的进行简化

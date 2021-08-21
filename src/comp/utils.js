@@ -1,4 +1,4 @@
-import { useState, useRef} from 'react';
+import { useState, useRef, memo } from 'react';
 
 const $mobx = Symbol('mobx admin');
 
@@ -65,4 +65,18 @@ export const autoObserve= ( target ) => {
           }
       })
    })
+}
+
+
+export const observer = ( fn ) => {
+    return memo(( props )=>{
+        const update = useUpdate();
+        const [reaction ] = useState(()=>new Reaction(`mobx_${fn.name}`, update))
+        try{
+            globalState.currentReaction = reaction
+            return fn(props)
+        }finally{
+            globalState.currentReaction = null
+        }
+    })
 }
