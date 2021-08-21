@@ -25,7 +25,6 @@ class Model{
     atom_a = new Atom();
     // 当作数据来执行 比如get 和 set
     get_a(reaction){
-        console.log(this.state_a,'aa')
         if(reaction){
             this.atom_a.reactions.add(reaction)
         }
